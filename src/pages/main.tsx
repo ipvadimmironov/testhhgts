@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, MutableRefObject } from 'react';
 import { Persons, ProductService, equipmentStock } from '../service/EventService';
 // import { Button } from 'primereact/button';
 import { DataView, DataViewLayoutOptions } from 'primereact/dataview';
@@ -23,11 +23,13 @@ import { Button } from 'primereact/button';
 import moment from 'moment';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Toast } from 'primereact/toast';
 
 
 type LayoutType = "grid" | "list";
 
 export default function TestHH() {
+    const toastTopCenter = useRef(null);
     const [events, setEvents] = useState<Event[]>([]);
     const [layout, setLayout] = useState<LayoutType>('grid');
     const [selectedId, setSelectedId] = useState<Event["id"] | null>(null);
@@ -46,6 +48,13 @@ export default function TestHH() {
             }))
         }
     })
+
+
+
+    const showMessage = (ref: MutableRefObject<Toast> | MutableRefObject<null>, severity: "success" | "info" | "warn" | "error" | undefined) => {
+
+        ref.current?.show({ severity: severity, summary: "Событие добавится через секунду", detail: "", life: 700 });
+    };
 
 
     const getSeverity = (event: Event) => {
@@ -122,6 +131,8 @@ export default function TestHH() {
 
     const addEvent = () => {
 
+        showMessage(toastTopCenter, "success");
+
         setTimeout(() => {
             setEvents(events => [{
                 id: (events.at(-1)?.id || 0) + 1,
@@ -132,7 +143,7 @@ export default function TestHH() {
                 responsiblePerson: getRandom(Persons),
                 isSeen: false
             }, ...events]);
-        }, 500)
+        }, 1000)
 
 
     }
@@ -161,30 +172,34 @@ export default function TestHH() {
 
 
     return (
-        <div className="card" style={{ minWidth: "300px" }}>
+        <>
+            <Toast ref={toastTopCenter} position="top-center" />
+            <div className="card" style={{ minWidth: "300px" }}>
 
-            {layout == "grid"
-                ? <DataView value={events} itemTemplate={gridItem} layout={layout} header={header()} paginator rows={6} />
-                :
-                <DataTable
-                    selectionMode="single"
-                    selection={events.find(ev => ev.id == selectedId)}
-                    onSelectionChange={(e) => setSelectedId(e.value.id)}
-                    dataKey="id"
-                    value={events}
-                    tableStyle={{ minWidth: '50rem' }}
-                    header={header()}
-                    paginator
-                    rowClassName={rowClass}
-                    rows={6}>
-                    <Column field="date" header="Дата"></Column>
-                    <Column header="Важность" body={statusTemplate}></Column>
-                    <Column field="equipment" header="Оборудование"></Column>
-                    <Column field="message" header="Сообщение"></Column>
-                    <Column field="responsiblePerson.name" header="Ответственный"></Column>
-                </DataTable>
-            }
-        </div>
+                {layout == "grid"
+                    ? <DataView value={events} itemTemplate={gridItem} layout={layout} header={header()} paginator rows={6} />
+                    :
+                    <DataTable
+                        selectionMode="single"
+                        selection={events.find(ev => ev.id == selectedId)}
+                        onSelectionChange={(e) => setSelectedId(e.value.id)}
+                        dataKey="id"
+                        value={events}
+                        tableStyle={{ minWidth: '50rem' }}
+                        header={header()}
+                        paginator
+                        rowClassName={rowClass}
+                        rows={6}>
+                        <Column field="date" header="Дата"></Column>
+                        <Column header="Важность" body={statusTemplate}></Column>
+                        <Column field="equipment" header="Оборудование"></Column>
+                        <Column field="message" header="Сообщение"></Column>
+                        <Column field="responsiblePerson.name" header="Ответственный"></Column>
+                    </DataTable>
+                }
+            </div>
+        </>
+
     )
 }
 
