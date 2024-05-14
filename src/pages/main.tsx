@@ -25,20 +25,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 
-// interface Product {
-//     id: string;
-//     code: string;
-//     name: string;
-//     description: string;
-//     image: string;
-//     price: number;
-//     category: string;
-//     quantity: number;
-//     inventoryStatus: string;
-//     rating: number;
-// }
-
-
 type LayoutType = "grid" | "list";
 
 export default function TestHH() {
@@ -46,8 +32,6 @@ export default function TestHH() {
     const [layout, setLayout] = useState<LayoutType>('grid');
     const [selectedId, setSelectedId] = useState<Event["id"] | null>(null);
     const [filter, setFilter] = useState("");
-
-
 
     useEffect(() => {
         ProductService.getProducts(filter).then((data) => setEvents(data.slice(0, 12)));
@@ -64,8 +48,8 @@ export default function TestHH() {
     })
 
 
-    const getSeverity = (product: Event) => {
-        switch (product.eventStatus) {
+    const getSeverity = (event: Event) => {
+        switch (event.eventStatus) {
             case 'Низкая':
                 return 'info';
 
@@ -80,32 +64,6 @@ export default function TestHH() {
         }
     };
 
-    // const listItem = (event: Event) => {
-    //     const index: number = 10;
-    //     return (
-    //         <div className="col-12" key={event.id}>
-    //             <div className={classNames('flex flex-column xl:flex-row xl:align-items-start p-4 gap-4', { 'border-top-1 surface-border': index !== 0 })}>
-    //                 <div className="flex flex-row sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-    //                     <div className="flex flex-row align-items-center sm:align-items-start gap-3">
-    //                         <div className="text-2xl font-bold text-900">{event.message}</div>
-    //                         {/* <Rating value={event.rating} readOnly cancel={false}></Rating> */}
-    //                         <div className="flex align-items-center gap-3">
-    //                             <span className="flex align-items-center gap-2">
-    //                                 <i className="pi pi-tag"></i>
-    //                                 <span className="font-semibold">{event.equipment}</span>
-    //                             </span>
-    //                             <Tag value={event.eventStatus} severity={getSeverity(event)}></Tag>
-    //                         </div>
-    //                     </div>
-    //                     <div className="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
-    //                         <span className="text-2xl font-semibold">{event.responsiblePerson.name}</span>
-    //                         {/* <Button icon="pi pi-shopping-cart" className="p-button-rounded" disabled={event.inventoryStatus === 'OUTOFSTOCK'}></Button> */}
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     );
-    // };
 
     const gridItem = (event: Event) => {
         return (
@@ -160,14 +118,6 @@ export default function TestHH() {
         );
     };
 
-    // const itemTemplate = (product: Event, layout: LayoutType): ReactNode => {
-    //     if (!product) {
-    //         return;
-    //     }
-
-    //     if (layout === 'list') return listItem(product);
-    //     else if (layout === 'grid') return gridItem(product);
-    // };
 
 
     const addEvent = () => {
@@ -191,13 +141,8 @@ export default function TestHH() {
     const header = () => {
         return (
             <div className="flex flex-wrap gap-3 p-4 justify-content-between" >
-
-
                 <DataViewLayoutOptions layout={layout} onChange={(e) => setLayout(e.value as LayoutType)} />
-
-
                 <Button onClick={addEvent} className="p-button-rounded">Добавить событие</Button>
-
                 <IconField iconPosition="left">
                     <InputIcon className="pi pi-search" />
                     <InputText value={filter} onChange={(e) => setFilter(e.currentTarget.value)} placeholder="" className='max-w-13rem' />
@@ -211,11 +156,7 @@ export default function TestHH() {
     };
 
 
-    const rowClass = (data: Event) => {
-        return {
-            'opacity-50': data.isSeen
-        };
-    };
+    const rowClass = (data: Event) => ({ 'opacity-50': data.isSeen });
 
 
 
